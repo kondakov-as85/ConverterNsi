@@ -31,17 +31,20 @@ public class ExtUtils {
         }
     }
 
-
-
-//    public static String  getProp(String key) {
-//        String result = "";
-//        try {
-//            result = FileUtils.getProperty(Constants.pathProperty, key);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
+    public static String getProp(String pathProperty, PropConverter propConverter) {
+        String result;
+        try {
+            result = FileUtils.getProperty(pathProperty, propConverter.name());
+            if (result==null) {
+                result = propConverter.getVal();
+                System.out.println("Not Param " + propConverter.name() + " getting default = " + result);
+            }
+        } catch (Exception e) {
+            System.out.println("Not Param " + propConverter.name());
+            result = propConverter.getVal();
+        }
+        return result;
+    }
 
 
 }

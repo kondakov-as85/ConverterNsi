@@ -7,6 +7,4 @@ public class ConvertMain {
         Generated gen = new Generated();
         gen.work(args);
     }
-
-
 }

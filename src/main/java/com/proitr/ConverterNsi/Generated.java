@@ -28,7 +28,8 @@ public class Generated {
         }
         String pathXls = params[1];
         String pathXmlFromNsi = params[2];
-        String paramPathOut = params[3];
+        String pathProp = params[3];
+        String paramPathOut = params[4];
 
         String pathOut = "./";
         if (paramPathOut != null) {
@@ -36,7 +37,7 @@ public class Generated {
         }
 
         ExtUtils.wLog("Open input XLS file...");
-        ArraySubData data = new ParserXls(pathXls, typeData, pathXmlFromNsi).arraySubData;
+        ArraySubData data = new ParserXls(pathXls, typeData, pathXmlFromNsi, pathProp).arraySubData;
         genereteXml(pathOut, fileOut, data);
     }
 

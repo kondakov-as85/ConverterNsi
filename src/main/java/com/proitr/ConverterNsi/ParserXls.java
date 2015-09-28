@@ -14,19 +14,16 @@ import java.util.Map;
 
 public class ParserXls {
     public ArraySubData arraySubData = null;
-    private static final String codeСonstruction = "45";
-    private final int beginRowPrognoz = 1;
-    private final int beginRowMert = 6;
-    private final int codeColumn = 0;
-    private final int idPrognozColumn = 2;
-    private final int idMertColumn = 4;
-    private final int valueMertColumn = 7;
     public static final int tpPrognoz = 1;
     public static final int tpMERT = 2;
 
-    public ParserXls(String pathFile, int type, String pathDataNSI) {
+    public ParserXls(String pathFile, int type, String pathDataNSI, String pathProp) {
         this.arraySubData = new ArraySubData();
         try {
+            String codeСonstruction = ExtUtils.getProp(pathProp, PropConverter.CODE_CONSTRUCTION);
+
+            int codeColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.CODE_COLUMN));
+
 
             ExtUtils.wLog("Reading NSI Data...");
             Map dataNsi = new ParseDataNsi(pathDataNSI).data;
@@ -37,7 +34,19 @@ public class ParserXls {
             boolean eof;
             int indRow;
             switch (type) {
-                case tpPrognoz:
+                case tpPrognoz: {
+                    int beginRowPrognoz = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.BEGIN_ROW_PROGNOZ));
+                    int idPrognozColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.ID_PROGNOZ_COLUMN));
+                    int colSum13 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_SUM_13)); //3
+                    int colCount13 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_COUNT_13)); //4
+                    int colSum14 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_SUM_14)); //5
+                    int colCount14 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_COUNT_14)); //6
+                    int colSum15 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_SUM_15)); //7
+                    int colCount15 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_COUNT_15)); //8
+                    int colSum16 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_SUM_16)); //9
+                    int colCount16 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_COUNT_16)); //10
+                    int colSum17 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_SUM_17)); //11
+                    int colCount17 = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.COLUMN_COUNT_17)); //12
                     eof = false;
                     indRow = beginRowPrognoz;
                     ExtUtils.wLog("Reading Prognoz Data...");
@@ -48,18 +57,20 @@ public class ParserXls {
                             HSSFCell codeCell = row.getCell(codeColumn);
                             if (codeCell != null) {
                                 String code = codeCell.getStringCellValue();
+                                String parentProduct = code.replace(".", ";").split(";")[0];
                                 SubDataNsi subDataNsi = (SubDataNsi) dataNsi.get(code);
                                 Integer id = Integer.valueOf(Double.valueOf(row.getCell(idPrognozColumn).getNumericCellValue()).intValue());
-                                double sum13 = row.getCell(3).getNumericCellValue();
-                                double count13 = row.getCell(4).getNumericCellValue();
-                                double sum14 = row.getCell(5).getNumericCellValue();
-                                double count14 = row.getCell(6).getNumericCellValue();
-                                double sum15 = row.getCell(7).getNumericCellValue();
-                                double count15 = row.getCell(8).getNumericCellValue();
-                                double sum16 = row.getCell(9).getNumericCellValue();
-                                double count16 = row.getCell(10).getNumericCellValue();
-                                double sum17 = row.getCell(11).getNumericCellValue();
-                                double count17 = row.getCell(12).getNumericCellValue();
+
+                                double sum13 = row.getCell(colSum13).getNumericCellValue();
+                                double count13 = row.getCell(colCount13).getNumericCellValue();
+                                double sum14 = row.getCell(colSum14).getNumericCellValue();
+                                double count14 = row.getCell(colCount14).getNumericCellValue();
+                                double sum15 = row.getCell(colSum15).getNumericCellValue();
+                                double count15 = row.getCell(colCount15).getNumericCellValue();
+                                double sum16 = row.getCell(colSum16).getNumericCellValue();
+                                double count16 = row.getCell(colCount16).getNumericCellValue();
+                                double sum17 = row.getCell(colSum17).getNumericCellValue();
+                                double count17 = row.getCell(colCount17).getNumericCellValue();
                                 //end-read
                                 //расчет данных и получение объекта-результата
                                 SubData subData = new SubData();
@@ -73,7 +84,6 @@ public class ParserXls {
                                 subData.setSumnext(sum15);
                                 subData.setSumnext2(sum16);
                                 subData.setSumnext3(sum17);
-                                String parentProduct = code.replace(".", ";").split(";")[0];
                                 if (parentProduct.equals(codeСonstruction)) {
                                     subData.setSumNorm(sum15);
                                     subData.setSumNorm2(sum16);
@@ -105,7 +115,12 @@ public class ParserXls {
                         indRow++;
                     }
                     break;
-                case tpMERT:
+                }
+                case tpMERT: {
+                    int beginRowMert = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.BEGIN_ROW_MERT));
+                    int idMertColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.ID_MERT_COLUMN));
+                    int valueMertColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.VALUE_MERT_COLUMN));
+
                     eof = false;
                     indRow = beginRowMert;
                     ExtUtils.wLog("Reading MERT Data...");
@@ -117,10 +132,11 @@ public class ParserXls {
                                 SubData subData = new SubData();
                                 //Читаем данные из файла
                                 String code = codeCell.getStringCellValue();
+                                String parentProduct = code.replace(".", ";").split(";")[0];
                                 int id = Integer.parseInt(row.getCell(idMertColumn).getStringCellValue());
                                 HSSFCell cell = row.getCell(valueMertColumn);
                                 if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                                    String[] vals = cell.getStringCellValue().replaceAll("\n", ";").split(";");
+                                    String[] vals = cell.getStringCellValue().split("\n");
                                     String val1 = vals[0].replace(",", ".").replaceAll(" ", "").replaceAll(" ", "");
                                     String val2 = vals[1].replace(",", ".").replaceAll(" ", "").replaceAll(" ", "");
                                     //end-read
@@ -143,8 +159,8 @@ public class ParserXls {
                                         double count16 = count15 * 1.04D;
                                         double sum17 = sum16 * 1.03D * 0.987D;
                                         double count17 = count16 * 1.03D;
+
                                         subData.setId(Integer.valueOf(id));
-                                        String parentProduct = code.replace(".", ";").split(";")[0];
                                         subData.setSumlast(sum13);
                                         subData.setSumcurr(sum14);
                                         subData.setSumnext(sum15);
@@ -187,6 +203,8 @@ public class ParserXls {
                         }
                         indRow++;
                     }
+                    break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
