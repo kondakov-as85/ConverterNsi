@@ -9,6 +9,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.FileInputStream;
 import java.util.Map;
 
@@ -121,6 +124,15 @@ public class ParserXls {
                     int idMertColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.ID_MERT_COLUMN));
                     int valueMertColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.VALUE_MERT_COLUMN));
 
+                    String fSum13 = ExtUtils.getFormula(pathProp, PropFormula.SUM13);
+                    String fCount13 = ExtUtils.getFormula(pathProp, PropFormula.COUNT13);
+                    String fSum15 = ExtUtils.getFormula(pathProp, PropFormula.SUM15);
+                    String fCount15 = ExtUtils.getFormula(pathProp, PropFormula.SUM15);
+                    String fSum16 = ExtUtils.getFormula(pathProp, PropFormula.SUM16);
+                    String fCount16 = ExtUtils.getFormula(pathProp, PropFormula.SUM16);
+                    String fSum17 = ExtUtils.getFormula(pathProp, PropFormula.SUM17);
+                    String fCount17 = ExtUtils.getFormula(pathProp, PropFormula.SUM17);
+
                     eof = false;
                     indRow = beginRowMert;
                     ExtUtils.wLog("Reading MERT Data...");
@@ -151,14 +163,14 @@ public class ParserXls {
                                             System.out.println("Error: Parse bad symbol: " + val2);
                                             continue;
                                         }
-                                        double sum13 = sum14 * 0.97D / 1.124D;
-                                        double count13 = count14 * 0.97D;
-                                        double sum15 = sum14 * 1.05D * 0.947D;
-                                        double count15 = count14 * 1.05D;
-                                        double sum16 = sum15 * 1.04D * 1.042D;
-                                        double count16 = count15 * 1.04D;
-                                        double sum17 = sum16 * 1.03D * 0.987D;
-                                        double count17 = count16 * 1.03D;
+                                        double sum13 = calc(sum14, fSum13); //sum14 * 0.97D / 1.124D;
+                                        double count13 = calc(count14, fCount13); //count14 * 0.97D;
+                                        double sum15 = calc(sum14, fSum15); //sum14 * 1.05D * 0.947D;
+                                        double count15 = calc(count14, fCount15); //count14 * 1.05D;
+                                        double sum16 = calc(sum15, fSum16); //sum15 * 1.04D * 1.042D;
+                                        double count16 = calc(count15, fCount16); //count15 * 1.04D;
+                                        double sum17 = calc(sum16, fSum17); //sum16 * 1.03D * 0.987D;
+                                        double count17 = calc(count16,fCount17); //count16 * 1.03D;
 
                                         subData.setId(Integer.valueOf(id));
                                         subData.setSumlast(sum13);
@@ -209,5 +221,20 @@ public class ParserXls {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static Double calc(double argValue, String formula) {
+        Double result = null;
+        try {
+            ScriptEngineManager mgr = new ScriptEngineManager();
+            ScriptEngine engine = mgr.getEngineByName("JavaScript");
+            String infix = formula;
+            engine.put("arg1", argValue);
+            result = (Double) engine.eval(infix);
+            result = ExtUtils.round(result, 2);
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

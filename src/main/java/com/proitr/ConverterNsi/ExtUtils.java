@@ -46,5 +46,28 @@ public class ExtUtils {
         return result;
     }
 
+    public static String getFormula(String pathProperty, PropFormula propFormula) {
+        String result;
+        try {
+            result = FileUtils.getProperty(pathProperty, propFormula.name());
+            if (result==null) {
+                result = propFormula.getFormula();
+                System.out.println("Not Param " + propFormula.name() + " getting default = " + result);
+            }
+        } catch (Exception e) {
+            result = propFormula.getFormula();
+            System.out.println("Not Param " + propFormula.name() + " getting default = " + result);
+        }
+        return result;
+    }
+
+    public static double round(double number, int scale) {
+        int pow = 10;
+        for (int i = 1; i < scale; i++)
+            pow *= 10;
+        double tmp = number * pow;
+        return (double) (int) ((tmp - (int) tmp) >= 0.5 ? tmp + 1 : tmp) / pow;
+    }
+
 
 }
