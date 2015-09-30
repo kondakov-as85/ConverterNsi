@@ -163,14 +163,14 @@ public class ParserXls {
                                             System.out.println("Error: Parse bad symbol: " + val2);
                                             continue;
                                         }
-                                        double sum13 = calc(sum14, fSum13); //sum14 * 0.97D / 1.124D;
-                                        double count13 = calc(count14, fCount13); //count14 * 0.97D;
-                                        double sum15 = calc(sum14, fSum15); //sum14 * 1.05D * 0.947D;
-                                        double count15 = calc(count14, fCount15); //count14 * 1.05D;
-                                        double sum16 = calc(sum15, fSum16); //sum15 * 1.04D * 1.042D;
-                                        double count16 = calc(count15, fCount16); //count15 * 1.04D;
-                                        double sum17 = calc(sum16, fSum17); //sum16 * 1.03D * 0.987D;
-                                        double count17 = calc(count16,fCount17); //count16 * 1.03D;
+                                        double sum13 = calc(sum14, fSum13);         //sum14 * 0.97D / 1.124D;
+                                        double count13 = calc(count14, fCount13);   //count14 * 0.97D;
+                                        double sum15 = calc(sum14, fSum15);         //sum14 * 1.05D * 0.947D;
+                                        double count15 = calc(count14, fCount15);   //count14 * 1.05D;
+                                        double sum16 = calc(sum15, fSum16);         //sum15 * 1.04D * 1.042D;
+                                        double count16 = calc(count15, fCount16);   //count15 * 1.04D;
+                                        double sum17 = calc(sum16, fSum17);         //sum16 * 1.03D * 0.987D;
+                                        double count17 = calc(count16,fCount17);    //count16 * 1.03D;
 
                                         subData.setId(Integer.valueOf(id));
                                         subData.setSumlast(sum13);
@@ -200,9 +200,6 @@ public class ParserXls {
                                             subData.setValueIndex(count15);
                                             subData.setValueIndex2(count16);
                                             subData.setValueIndex3(count17);
-                                        }
-                                        if (code.equals("85.12.000")) {
-                                            System.out.println("s13= " + sum13 + " | s14= " + sum14 + " | s15= " + sum15 + " | s16= " + sum16 + " | s17= " + sum17);
                                         }
                                         this.arraySubData.getSubData().add(subData);
                                     }
