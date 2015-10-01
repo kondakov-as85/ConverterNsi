@@ -15,30 +15,38 @@ public class Generated {
 
     public void work(String[] params) throws IOException {
         ExtUtils.wLog("Start Convert...");
-        String type = params[0];
-
-        int typeData = 0;
-        String fileOut = "";
-        if (type.equals("-p")) {
-            typeData = 1;
-            fileOut = "outPrognoz.xml";
-        } else if (type.equals("-m")) {
-            typeData = 2;
-            fileOut = "outMERT.xml";
-        }
-        String pathXls = params[1];
-        String pathXmlFromNsi = params[2];
-        String pathProp = params[3];
-        String paramPathOut = params[4];
-
+//        String type = params[0];
+//        int typeData = 0;
+//        String fileOut = "";
+//        if (type.equals("-p")) {
+//            typeData = 1;
+//            fileOut = "outPrognoz.xml";
+//        } else if (type.equals("-m")) {
+//            typeData = 2;
+//            fileOut = "outMERT.xml";
+//        }
+        String pathXls = params[0];
+        String pathXls2 = params[1];
+        String pathXmlFromNsi1 = params[2];
+        String pathXmlFromNsi2 = params[3];
+        String pathProp = params[4];
+        String paramPathOut = params[5];
         String pathOut = "./";
         if (paramPathOut != null) {
             pathOut = paramPathOut;
         }
 
-        ExtUtils.wLog("Open input XLS file...");
-        ArraySubData data = new ParserXls(pathXls, typeData, pathXmlFromNsi, pathProp).arraySubData;
-        genereteXml(pathOut, fileOut, data);
+        ExtUtils.wLog("Open input XLS file 2...");
+        ParserXls parserXls = new ParserXls(pathXls2, 2, pathXmlFromNsi2, pathProp, null);
+        ArraySubData data = parserXls.arraySubData;
+        genereteXml(pathOut, "outMERT.xml", data);
+
+        ExtUtils.wLog("Open input XLS file 2...");
+        ParserXls parserXls2 = new ParserXls(pathXls, 1, pathXmlFromNsi1, pathProp, parserXls.badCode);
+        ArraySubData data2 = parserXls2.arraySubData;
+
+        genereteXml(pathOut, "outPrognoz.xml", data2);
+
     }
 
     private static void genereteXml(String pathXmlOut, String fileOut, ArraySubData data) {

@@ -8,15 +8,20 @@ import java.io.IOException;
 public class ConvertDebag {
     public static void main(String[] args) throws IOException {
         Generated gen = new Generated();
-        String[] params = new String[5];
-        params[0] = "-p";
-        params[1] = "d:\\Temp\\Converter\\f1.xls";
-        params[2] = "d:\\Temp\\Converter\\dataNsi.xml";
-        params[3] = "./params.property";
-        params[4] = "d:\\Temp\\Out_Converter\\";
-        gen.work(params);
-        params[0] = "-m";
-        params[1] = "d:\\Temp\\Converter\\f2.xls";
+
+//        String pathXls = params[0];
+//        String pathXls2 = params[1];
+//        String pathXmlFromNsi = params[2];
+//        String pathProp = params[3];
+//        String paramPathOut = params[4];
+
+        String[] params = new String[6];
+        params[0] = "d:\\Temp\\Converter_new\\f1.xls";
+        params[1] = "d:\\Temp\\Converter_new\\f2_new2.xls";
+        params[2] = "d:\\Temp\\Converter_new\\dataNsi_municip.xml";
+        params[3] = "d:\\Temp\\Converter_new\\dataNsi_region.xml";
+        params[4] = "./params.property";
+        params[5] = "d:\\Temp\\Out_Converter\\";
         gen.work(params);
     }
 }
