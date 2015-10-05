@@ -1,5 +1,6 @@
 package com.proitr.ConverterNsi;
 
+import com.mycomp.ExtUtils.FileUtils;
 import com.proitr.ConverterNsi.objects.ArraySubData;
 import com.proitr.ConverterNsi.objects.SubData;
 import com.proitr.ConverterNsi.objects.SubDataNsi;
@@ -23,7 +24,7 @@ public class ParserXls {
     public static final int tpMERT = 2;
     public List<String> badCode;
 
-    public ParserXls(String pathFile, int type, String pathDataNSI, String pathProp, List<String> badCode) {
+    public ParserXls(String pathFile, int type, String pathDataNSI, String pathProp, List<String> badCode, String pathOut) {
         this.badCode = badCode;
         this.arraySubData = new ArraySubData();
         try {
@@ -40,6 +41,7 @@ public class ParserXls {
             int indRow;
             switch (type) {
                 case tpPrognoz: {
+                    FileUtils.writeFile(pathOut + "badCodePrognoz.out", "", false);
                     int codeColumnPrognoz = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.CODE_PROGNOZ_COLUMN));
                     int beginRowPrognoz = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.BEGIN_ROW_PROGNOZ));
                     int idPrognozColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.ID_PROGNOZ_COLUMN));
@@ -66,8 +68,13 @@ public class ParserXls {
                                 if (this.badCode.contains(code)) {
                                     String parentProduct = code.replace(".", ";").split(";")[0];
                                     SubDataNsi subDataNsi = (SubDataNsi) dataNsi.get(code);
-                                    Integer id = Integer.valueOf(Double.valueOf(row.getCell(idPrognozColumn).getNumericCellValue()).intValue());
-
+                                    if (subDataNsi == null){
+                                        indRow++;
+                                        FileUtils.writeFile(pathOut + "badCodePrognoz.out", code+"\n", true);
+                                        continue;
+                                    }
+                                    //Integer id = Integer.valueOf(Double.valueOf(row.getCell(idPrognozColumn).getNumericCellValue()).intValue());
+                                    Integer id = subDataNsi.getParent();
                                     double sum13 = row.getCell(colSum13).getNumericCellValue();
                                     double count13 = row.getCell(colCount13).getNumericCellValue();
                                     double sum14 = row.getCell(colSum14).getNumericCellValue();
@@ -114,6 +121,9 @@ public class ParserXls {
                                         subData.setValueIndex2(count16);
                                         subData.setValueIndex3(count17);
                                     }
+                                    subData.setBase("");
+                                    subData.setComment("");
+                                    subData.setBaseMethod(0);
                                     this.arraySubData.getSubData().add(subData);
                                 }
                             }
@@ -125,6 +135,7 @@ public class ParserXls {
                     break;
                 }
                 case tpMERT: {
+                    FileUtils.writeFile(pathOut + "badCodeMert.out", "", false);
                     int codeColumnMert = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.CODE_MERT_COLUMN));
                     int beginRowMert = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.BEGIN_ROW_MERT));
                     int idMertColumn = Integer.parseInt(ExtUtils.getProp(pathProp, PropConverter.ID_MERT_COLUMN));
@@ -163,8 +174,14 @@ public class ParserXls {
                                 String code = codeCell.getStringCellValue();
 //                                System.out.println(code);
                                 SubDataNsi subDataNsi = (SubDataNsi) dataNsi.get(code);
+                                if (subDataNsi == null){
+                                    indRow++;
+                                    FileUtils.writeFile(pathOut + "badCodeMert.out", code+"\n", true);
+                                    continue;
+                                }
                                 String parentProduct = code.replace(".", ";").split(";")[0];
-                                int id = Integer.parseInt(row.getCell(idMertColumn).getStringCellValue());
+                                //int id = Integer.parseInt(row.getCell(idMertColumn).getStringCellValue());
+                                Integer id = subDataNsi.getParent();
                                 HSSFCell cell = row.getCell(valueMertColumn);
                                 double baseSum = 0.0D;
                                 double baseCount = 0.0D;
@@ -208,35 +225,32 @@ public class ParserXls {
                                 subData.setSumnext(sumPrognoz1);
                                 subData.setSumnext2(sumPrognoz2);
                                 subData.setSumnext3(sumPrognoz3);
-                                subData.setSumNorm(0.0D);
-                                subData.setSumNorm2(0.0D);
-                                subData.setSumNorm3(0.0D);
-//                                        if (parentProduct.equals(codeСonstruction)) {
-//                                            subData.setSumNorm(sum15);
-//                                            subData.setSumNorm2(sum16);
-//                                            subData.setSumNorm3(sum17);
-//                                        } else {
-//                                            subData.setSumIndex(sum15);
-//                                            subData.setSumIndex2(sum16);
-//                                            subData.setSumIndex3(sum17);
-//                                        }
+                                if (parentProduct.equals(codeСonstruction)) {
+                                    subData.setSumNorm(sumPrognoz1);
+                                    subData.setSumNorm2(sumPrognoz2);
+                                    subData.setSumNorm3(sumPrognoz3);
+                                } else {
+                                    subData.setSumIndex(sumPrognoz1);
+                                    subData.setSumIndex2(sumPrognoz2);
+                                    subData.setSumIndex3(sumPrognoz3);
+                                }
                                 subData.setValuelast(baseCount);
                                 subData.setValuecurr(countSettlementYear);
                                 subData.setValuenext(countPrognoz1);
                                 subData.setValuenext2(countPrognoz2);
                                 subData.setValuenext3(countPrognoz3);
-                                subData.setValueNorm(0.0D);
-                                subData.setValueNorm2(0.0D);
-                                subData.setValueNorm3(0.0D);
-//                                        if (parentProduct.equals(codeСonstruction)) {
-//                                            subData.setValueNorm(count15);
-//                                            subData.setValueNorm2(count16);
-//                                            subData.setValueNorm3(count17);
-//                                        } else {
-//                                            subData.setValueIndex(count15);
-//                                            subData.setValueIndex2(count16);
-//                                            subData.setValueIndex3(count17);
-//                                        }
+                                if (parentProduct.equals(codeСonstruction)) {
+                                    subData.setValueNorm(countPrognoz1);
+                                    subData.setValueNorm2(countPrognoz2);
+                                    subData.setValueNorm3(countPrognoz3);
+                                } else {
+                                    subData.setValueIndex(countPrognoz1);
+                                    subData.setValueIndex2(countPrognoz2);
+                                    subData.setValueIndex3(countPrognoz3);
+                                }
+                                subData.setBase("");
+                                subData.setComment("");
+                                subData.setBaseMethod(0);
                                 this.arraySubData.getSubData().add(subData);
 
 
